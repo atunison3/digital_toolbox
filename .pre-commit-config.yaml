@@ -1,0 +1,60 @@
+# .pre-commit-config.yaml
+# Uses tools from the project's .venv so versions stay in sync.
+
+repos:
+  # Standard file hygiene hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        files: ^(digital_toolbox|tests)/
+      - id: end-of-file-fixer
+        files: ^(digital_toolbox|tests)/
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+      - id: debug-statements
+        files: ^(digital_toolbox|tests)/
+      - id: detect-private-key
+
+  # Tools run from the local .venv
+  - repo: local
+    hooks:
+      - id: black
+        name: black
+        entry: .venv/bin/black
+        language: system
+        types: [python]
+        files: ^(digital_toolbox|tests)/
+
+      - id: ruff-check
+        name: ruff check
+        entry: .venv/bin/ruff
+        language: system
+        types: [python]
+        files: ^(digital_toolbox|tests)/
+        args: [check]
+
+      - id: mypy
+        name: mypy
+        entry: .venv/bin/mypy
+        language: system
+        types: [python]
+        files: ^(digital_toolbox|tests)/
+        pass_filenames: false
+        args: [digital_toolbox, tests]
+
+      - id: bandit
+        name: bandit
+        entry: .venv/bin/bandit
+        language: system
+        types: [python]
+        files: ^(digital_toolbox|tests)/
+        args: [-r, -ll, --quiet]
+
+      - id: unittest
+        name: unittest
+        entry: .venv/bin/python -m unittest discover -s tests -p "test_*.py"
+        language: system
+        pass_filenames: false
+        always_run: true
